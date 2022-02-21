@@ -35,3 +35,53 @@
     transform: rotate(360deg);
   }
 }
+
+#board {
+    padding: 30px;
+    margin-bottom: 80px;
+}
+
+.cell {
+  background-color: transparent;
+  padding: 0px 3px 6px 3px;
+  margin: 2px;
+  color: white;
+  font-size: 22px;
+  font-weight: bold;
+  text-transform: capitalize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #3a3a3c;
+}
+
+.cell:before {
+    content: "";
+    display: block;
+    padding-top: 100%;
+}
+
+.correct {
+  background-color: #538d4e;
+  border: none;
+}
+
+.present {
+  background-color: #b59f3b;
+  border: none;
+}
+
+.absent {
+  background-color: #3a3a3c;
+  border: none;
+}
+
+.restart {
+    background-color: #f3969a;
+    margin: 10px;
+}
+
+.add {
+    background-color: #78c2ad;
+    margin: 10px;
+}

@@ -1,12 +1,61 @@
 import './App.css';
 import {useState, useEffect} from 'react'
-import Board from './components/Board/Board.js'
-import {evaluateGuess, generateWord} from './wordle.js'
+import WordList from './components/WordList/WordList'
+import Board from './components/Board/Board'
+import RankingPanel from './components/RankingPanel/RankingPanel'
+import MissingAlert from './components/Alerts/MissingAlert'
+import InvalidAlert from './components/Alerts/InvalidAlert'
+import WrongAlert from './components/Alerts/WrongAlert'
+import Wordle from './wordle.js'
 import $ from 'jquery'
+
+// console.clear();
 
 function App() {
     const [guesses, setGuesses] = useState([])
     const [currentGuess, setCurrentGuess] = useState("")
+    const [currentState, setCurrentState] = useState("BBBBB")
+    const [top_answers, setTopAnswers] = useState(Wordle.getTopAnswers())
+    const [possible_words, setPossibleWords] = useState(Wordle.getPossibleWords())
+
+    setTimeout(() => setTopAnswers(Wordle.getTopAnswers()), 5000);
+
+    const addGuess = () => {
+        const check = Wordle.validateGuess(currentGuess, currentState)
+        if (check === 2){
+            guesses.push([currentGuess, currentState])
+            setGuesses(guesses)
+            setCurrentGuess("")
+            setCurrentState("BBBBB")
+            setPossibleWords(Wordle.getPossibleWords())
+            setTopAnswers(Wordle.getTopAnswers())
+        }
+        else if (check === 1)
+            $('#invalid-alert').show()
+        else if (check === 0)
+            $('#wrong-alert').show()
+        else
+            $('#missing-alert').show()
+    }
+
+    const restart = () => {
+        setGuesses([])
+        setCurrentGuess("")
+        setCurrentState("BBBBB")
+        Wordle.restart()
+        setTopAnswers(Wordle.getTopAnswers())
+        setPossibleWords(Wordle.getPossibleWords())
+    }
+
+    const nextState = {
+        "B": "Y",
+        "Y": "G",
+        "G": "B"
+    }
+
+    const changeState = (id) => {
+        setCurrentState(currentState.substring(0, id) + nextState[currentState[id]] + currentState.substring(id + 1))
+    }
 
     useEffect(() => {
         $('.alert').hide()
@@ -18,48 +67,47 @@ function App() {
                 setCurrentGuess(currentGuess.slice(0, -1))
             }
             else if (e.keyCode === 13){
-                if (currentGuess.length === 5){
-                    const check = evaluateGuess(currentGuess)
-                    if (check === 1){
-                        guesses.push(currentGuess)
-                        setGuesses(guesses)
-                        setCurrentGuess("")
-                    }
-                    else if (check === 0){
-                        $('#wrong-alert').show()
-                    }
+                const check = Wordle.validateGuess(currentGuess, currentState)
+                if (check === 2){
+                    guesses.push([currentGuess, currentState])
+                    setGuesses(guesses)
+                    setCurrentGuess("")
+                    setCurrentState("BBBBB")
+                    setPossibleWords(Wordle.getPossibleWords())
+                    setTopAnswers(Wordle.getTopAnswers())
                 }
-                else {
+                else if (check === 1)
+                    $('#invalid-alert').show()
+                else if (check === 0)
+                    $('#wrong-alert').show()
+                else
                     $('#missing-alert').show()
-                }
             }
         }
         window.addEventListener('keyup', handler)
         return () => {
             window.removeEventListener('keyup', handler)
         }
-    }, [currentGuess, guesses])
-
-    const restart = () => {
-        setGuesses([])
-        setCurrentGuess("")
-        generateWord()
-    }
+    }, [currentGuess, guesses, currentState])
 
     return (
         <div className="App">
-            <div className="alert alert-info" id="wrong-alert" role="alert">
-                Not in word list
+
+            <MissingAlert/>
+            <WrongAlert/>
+            <InvalidAlert/>
+
+            <div className="container-fluid">
+                <header className="App-header">WORDLE</header>
+
+                <div className='row justify-content-around'>
+                    <WordList possible_words={possible_words}/>
+                    <Board guesses={guesses} currentGuess={currentGuess} currentState={currentState} changeState={changeState}/>
+                    <RankingPanel top_answers={top_answers}/>
+                </div>
+                <button type="button" className="btn restart" onClick={restart}>Restart</button>
+                <button type="button" className="btn add" onClick={addGuess}>Add</button>
             </div>
-
-            <div className="alert alert-info" id="missing-alert" role="alert">
-                Too short
-            </div>
-
-            <header className="App-header">WORDLE</header>
-
-            <Board guesses={guesses} currentGuess={currentGuess}/>
-            <button type="button" className="btn btn-info" onClick={restart}>Restart</button>
         </div>
     );
 }

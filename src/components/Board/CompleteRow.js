@@ -1,13 +1,10 @@
 import Cell from './Cell.js'
-import {getStatus} from '../../wordle.js'
 
-const CompleteRow = ({word}) => {
-    const results = getStatus(word)
-
+const CompleteRow = ({word, state}) => {
     return (
         <div className='row'>
             {word.split('').map((char, i) => (
-                <Cell char={char} status={results[i]} key={i}/>
+                <Cell key={i} char={char} state={state[i]}/>
             ))}
         </div>
     )

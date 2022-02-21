@@ -1,12 +1,10 @@
 import Cell from './Cell.js'
 
-const CurrentRow = ({guess}) => {
-    const row = [...Array(5)]
-
+const CurrentRow = ({guess, state, changeState}) => {
     return (
         <div className='row'>
-            {row.map((_, i) => (
-                <Cell char={guess[i]} key={i}/>
+            {[...Array(5)].map((_, i) => (
+                <Cell key={i} char={guess[i]} state={state[i]} changeState={() => changeState(i)}/>
             ))}
         </div>
     )
