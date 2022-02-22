@@ -9,56 +9,35 @@ import WrongAlert from './components/Alerts/WrongAlert'
 import Wordle from './wordle.js'
 import $ from 'jquery'
 
+const nextState = {
+    "B": "Y",
+    "Y": "G",
+    "G": "B"
+}
+
 // console.clear();
 
 function App() {
     const [guesses, setGuesses] = useState([])
     const [currentGuess, setCurrentGuess] = useState("")
     const [currentState, setCurrentState] = useState("BBBBB")
-    const [top_answers, setTopAnswers] = useState(Wordle.getTopAnswers())
+    const [top_answers, setTopAnswers] = useState([])
     const [possible_words, setPossibleWords] = useState(Wordle.getPossibleWords())
 
-    setTimeout(() => setTopAnswers(Wordle.getTopAnswers()), 5000);
-
-    const addGuess = () => {
-        const check = Wordle.validateGuess(currentGuess, currentState)
-        if (check === 2){
-            guesses.push([currentGuess, currentState])
-            setGuesses(guesses)
-            setCurrentGuess("")
-            setCurrentState("BBBBB")
-            setPossibleWords(Wordle.getPossibleWords())
-            setTopAnswers(Wordle.getTopAnswers())
-        }
-        else if (check === 1)
-            $('#invalid-alert').show()
-        else if (check === 0)
-            $('#wrong-alert').show()
-        else
-            $('#missing-alert').show()
+    const fetchTopAnswers = () => {
+        setTimeout(() => {
+            if (top_answers.length === 0){
+                setTopAnswers(Wordle.getTopAnswers())
+                fetchTopAnswers()
+            }
+        }, 1000)
     }
 
-    const restart = () => {
-        setGuesses([])
-        setCurrentGuess("")
-        setCurrentState("BBBBB")
-        Wordle.restart()
-        setTopAnswers(Wordle.getTopAnswers())
-        setPossibleWords(Wordle.getPossibleWords())
-    }
-
-    const nextState = {
-        "B": "Y",
-        "Y": "G",
-        "G": "B"
-    }
-
-    const changeState = (id) => {
-        setCurrentState(currentState.substring(0, id) + nextState[currentState[id]] + currentState.substring(id + 1))
-    }
+    fetchTopAnswers()
 
     useEffect(() => {
         $('.alert').hide()
+
         const handler = (e: KeyboardEvent) => {
             if (e.keyCode > 64 && e.keyCode < 91 && currentGuess.length < 5){
                 setCurrentGuess(currentGuess + e.key)
@@ -89,6 +68,37 @@ function App() {
             window.removeEventListener('keyup', handler)
         }
     }, [currentGuess, guesses, currentState])
+
+    const addGuess = () => {
+        const check = Wordle.validateGuess(currentGuess, currentState)
+        if (check === 2){
+            guesses.push([currentGuess, currentState])
+            setGuesses(guesses)
+            setCurrentGuess("")
+            setCurrentState("BBBBB")
+            setPossibleWords(Wordle.getPossibleWords())
+            setTopAnswers(Wordle.getTopAnswers())
+        }
+        else if (check === 1)
+            $('#invalid-alert').show()
+        else if (check === 0)
+            $('#wrong-alert').show()
+        else
+            $('#missing-alert').show()
+    }
+
+    const restart = () => {
+        setGuesses([])
+        setCurrentGuess("")
+        setCurrentState("BBBBB")
+        Wordle.restart()
+        setTopAnswers(Wordle.getTopAnswers())
+        setPossibleWords(Wordle.getPossibleWords())
+    }
+
+    const changeState = (id) => {
+        setCurrentState(currentState.substring(0, id) + nextState[currentState[id]] + currentState.substring(id + 1))
+    }
 
     return (
         <div className="App">

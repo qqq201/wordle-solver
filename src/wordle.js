@@ -48,12 +48,13 @@ class Wordle {
         if (this.patterns.length === 0)
             return []
 
-        if (this.possible_words.length === 1)
+        if (this.possible_words.length === 1){
             return [{
                 id: 1,
                 word: this.possible_words[0],
                 info_gain: 0
             }]
+        }
 
         var info_gains = [];
         for (let i = 0; i < 2309; i++){
@@ -80,9 +81,10 @@ class Wordle {
         }
 
         var value = 0
+        const pow3 = [1, 3, 9, 27, 81]
 
         for (let i = 0; i < 5; i++){
-            value += map[pattern[i]] * Math.pow(3, i)
+            value += map[pattern[i]] * pow3[i]
         }
 
         return value
@@ -97,7 +99,6 @@ class Wordle {
     }
 
     validateGuess(guess, pattern) {
-        // check if a guess is valid
         // -1: not a 5 letter word
         // 0: not in the word list
         // 1: invalid guess or pattern
