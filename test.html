@@ -1,72 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8" />
-    <meta name="viewport"
-          content="width=device-width,
-                   initial-scale=1" />
+<html>
+<body>
 
-    <!-- Bootstrap CSS -->
-    <link
-      href= "https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity= "sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl"
-      crossorigin="anonymous"
-    />
-    <link rel="stylesheet"
-          href="style.css" />
-    <link rel="preconnect"
-    href="https://fonts.gstatic.com" />
-    <link
-      href= "https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap"
-      rel= "stylesheet"
-    />
-    <title>WORDLE</title>
-  </head>
-  <body>
-    <!-- services -->
-    <section id="service">
-        <h1 class="text-center">WORDLE</h1>
-        <div class="container px-4">
-            <div class="row gx-5">
-                <div class="col">
-                    <div class="flip-card">
-                      <div class="flip-card-inner">
-                        <div class="flip-card-front">
-                            H
-                        </div>
-                        <div class="flip-card-back">
-                            H
-                        </div>
-                      </div>
-                    </div>
-                </div>
-                <div class="col">
-                <div class="p-3 border bg-light">Custom column padding</div>
-                </div>
-             </div>
-        </div>
+<h2>JavaScript async / await</h2>
 
+<p id="demo"></p>
 
-    </section>
-    <script
-      src=
-"https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
-      integrity=
-"sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
-      crossorigin="anonymous"
-    >
-    var rotated = false;
+<script>
+function myDisplayer(some) {
+  document.getElementById("demo").innerHTML = some;
+}
 
-    document.getElementById('button').onclick = function() {
-        var div = document.getElementById('flip-card-inner'),
-            deg = rotated ? 180 : 180;
+async function myFunction() {
+	for(let i = 0; i < 100000; i++)
+        console.log('hi')
 
-        div.style.transform = 'rotateX('+deg+'deg)';
-        rotated = !rotated;
-    }
+	return "Hello";
+}
 
-    </script>
-  </body>
+const test = async () => {
+    const value = await myFunction()
+    console.log(value)
+    myDisplayer(value)
+}
+
+test()
+myDisplayer("hi")
+</script>
+
+</body>
 </html>

@@ -1,4 +1,4 @@
-const Cell = ({char, state, changeState}) => {
+const Cell = ({char, color, changeColor}) => {
     const map = {
         "B": "absent",
         "Y": "present",
@@ -6,7 +6,7 @@ const Cell = ({char, state, changeState}) => {
     }
 
     return (
-        <div className={"col cell " + map[state]} onClick={changeState}>
+        <div className={"col cell " + map[color]} onClick={changeColor}>
             {char}
         </div>
     )

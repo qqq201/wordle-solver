@@ -9,7 +9,7 @@ const pagination = paginationFactory({
     hidePageListOnlyOnePage: true
 })
 
-const WordList = ({possible_words}) => {
+const WordList = ({possible_answers}) => {
     const columns = [{
         dataField: 'id',
         text: '#'
@@ -19,8 +19,9 @@ const WordList = ({possible_words}) => {
     }]
     return (
         <div id="wordlist" className="col-md-3">
-            POSSIBLE ANSWERS ({possible_words.length})
-            <BootstrapTable keyField='id' data={possible_words} columns={columns} pagination={pagination}/>
+            POSSIBLE ANSWERS ({possible_answers.length})
+            <BootstrapTable keyField='id' data={possible_answers} columns={columns} pagination={pagination}/>
+            {possible_answers.length === 0 && "Searching..."}
         </div>
     )
 }

@@ -16,8 +16,8 @@ const RankingPanel = ({top_answers}) => {
         dataField: 'word',
         text: 'Word'
     },{
-        dataField: 'info_gain',
-        text: 'Information Gain'
+        dataField: 'entropy',
+        text: 'Entropy'
     }]
 
     return (

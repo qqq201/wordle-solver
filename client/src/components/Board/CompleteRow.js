@@ -1,10 +1,10 @@
 import Cell from './Cell.js'
 
-const CompleteRow = ({word, state}) => {
+const CompleteRow = ({word, pattern}) => {
     return (
         <div className='row'>
             {word.split('').map((char, i) => (
-                <Cell key={i} char={char} state={state[i]}/>
+                <Cell key={i} char={char} color={pattern[i]}/>
             ))}
         </div>
     )
