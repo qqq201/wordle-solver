@@ -10,20 +10,28 @@ const pagination = paginationFactory({
 
 const RankingPanel = ({top_answers}) => {
     const columns = [{
-        dataField: 'id',
-        text: 'Rank'
-    },{
         dataField: 'word',
-        text: 'Word'
+        text: 'Word',
+        sort: true
     },{
         dataField: 'entropy',
-        text: 'Entropy'
+        text: 'Entropy',
+        sort: true
+    },{
+        dataField: 'probability',
+        text: 'Probability',
+        sort: true
+    }]
+
+    const defaultSorted = [{
+        dataField: 'entropy',
+        order: 'desc'
     }]
 
     return (
         <div className="col-md-3">
             RANKING
-            <BootstrapTable keyField='id' data={top_answers} columns={columns} pagination={pagination}/>
+            <BootstrapTable keyField='word' data={top_answers} columns={columns} pagination={pagination} defaultSorted={defaultSorted}/>
             {top_answers.length === 0 && "Calculating..."}
         </div>
     )

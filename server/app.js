@@ -18,6 +18,11 @@ app.get('/restart', (req, res) => {
     return res.status(200).json({success: true})
 })
 
+app.post('/changeMode', (req, res) => {
+    Wordle.setMode(req.body.mode)
+    return res.status(200).json({success: true})
+})
+
 app.post('/validate', (req, res, next) => {
     return res.status(200).json({result: Wordle.validateGuess(req.body.guess, req.body.pattern)})
 })

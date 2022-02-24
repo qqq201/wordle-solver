@@ -11,16 +11,25 @@ const pagination = paginationFactory({
 
 const WordList = ({possible_answers}) => {
     const columns = [{
-        dataField: 'id',
-        text: '#'
-    },{
         dataField: 'word',
-        text: 'word'
+        text: 'Word',
+        sort: true
+    }, {
+        dataField: 'probability',
+        text: 'Probability',
+        sort: true
     }]
+
+
+    const defaultSorted = [{
+        dataField: 'probability',
+        order: 'desc'
+    }]
+
     return (
         <div id="wordlist" className="col-md-3">
             POSSIBLE ANSWERS ({possible_answers.length})
-            <BootstrapTable keyField='id' data={possible_answers} columns={columns} pagination={pagination}/>
+            <BootstrapTable keyField='word' data={possible_answers} columns={columns} pagination={pagination} defaultSorted={defaultSorted}/>
             {possible_answers.length === 0 && "Searching..."}
         </div>
     )

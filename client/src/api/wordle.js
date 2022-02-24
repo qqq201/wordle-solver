@@ -16,6 +16,11 @@ const wordle = {
         return axiosClient.get(url)
     },
 
+    changeMode: (mode) => {
+        const url = '/changeMode'
+        return axiosClient.post(url, {mode: mode})
+    },
+
     validate: (guess, pattern) =>{
         const message = {
             guess: guess,

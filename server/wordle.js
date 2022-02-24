@@ -1,12 +1,33 @@
-import word_list from './wordlist.js'
+import fs from 'fs'
+
+const sum = (array) => array.reduce((a, b) => a + b)
 
 class Wordle {
     constructor() {
-        this.possible_answers = word_list
+        this.word_list = fs.readFileSync('./utils/words.txt').toString().split("\n")
+        this.word_list.splice(-1)
+        this.possible_answers = []
+        this.possibility = fs.readFileSync('./utils/possibility.json')
+        this.possibility = JSON.parse(this.possibility)
+        this.mode = "2309"
+        this.total_possibility = 0
+    }
+
+    setMode(mode) {
+        this.mode = mode
+    }
+
+    calTotalPossibility() {
+        this.total_possibility = sum(this.possible_answers.map((word, _) => this.possibility[word]))
     }
 
     restart() {
-        this.possible_answers = word_list
+        if (this.mode === "12947")
+            this.possible_answers = this.word_list
+        else if (this.mode === "2309")
+            this.possible_answers = this.word_list.slice(0, 2309)
+
+        this.calTotalPossibility()
     }
 
     evaluate(word, answer) {
@@ -37,35 +58,40 @@ class Wordle {
         return results.join("")
     }
 
-    getPossibleAnswers() {
-        var sorted_list = this.possible_answers
-        sorted_list.sort()
+    getProbability(word) {
+        if (this.mode === "2309"){
+            return 1 / this.possible_answers.length
+        }
+        else {
+            return this.possibility[word] / this.total_possibility
+        }
+    }
 
-        return sorted_list.map((word, i) => {
+    getPossibleAnswers() {
+        return this.possible_answers.map((word, _) => {
             return {
-                id: i + 1,
-                word: word
+                word: word,
+                probability: this.getProbability(word).toFixed(5)
             }
         })
     }
 
     calEntropy(guess) {
-        var count = {}
+        var p = {}
 
         this.possible_answers.forEach((word, _) => {
             var pattern = this.evaluate(guess, word)
 
-            if (pattern in count)
-                count[pattern]++
+            if (pattern in p)
+                p[pattern] += this.getProbability(word)
             else
-                count[pattern] = 1
+                p[pattern] = this.getProbability(word)
         })
 
         var entropy = 0
 
-        Object.values(count).forEach((value, _) => {
-            const p = value / this.possible_answers.length
-            entropy -= p * Math.log2(p)
+        Object.values(p).forEach((value, _) => {
+            entropy -= value * Math.log2(value)
         })
 
         return entropy
@@ -74,28 +100,22 @@ class Wordle {
     getTopAnswers() {
         if (this.possible_answers.length === 1){
             return [{
-                id: 1,
                 word: this.possible_answers[0],
-                entropy: 0
+                entropy: 0,
+                probability: 1
             }]
         }
-
-        var info_gains = [];
-        for (let i = 0; i < word_list.length; i++){
-            info_gains.push([i, this.calEntropy(word_list[i], this.possible_answers)]);
+        else {
+            const sorted_list = [...this.word_list]
+            sorted_list.sort()
+            return sorted_list.map((word, _) => {
+                return {
+                    word: word,
+                    entropy: this.calEntropy(word).toFixed(2),
+                    probability: this.possible_answers.includes(word) ? this.getProbability(word).toFixed(5) : 0
+                }
+            })
         }
-
-        info_gains.sort(function(a, b) {
-            return b[1] - a[1];
-        })
-
-        return info_gains.map((item, i) => {
-            return {
-                id: i + 1,
-                word: word_list[item[0]],
-                entropy: item[1].toFixed(2)
-            }
-        })
     }
 
     filterPossibleWords(guess, pattern) {
@@ -114,10 +134,11 @@ class Wordle {
 
         if (guess.length !== 5)
             return -1
-        else if (word_list.includes(guess)){
+        else if (this.word_list.includes(guess)){
             const remaining = this.filterPossibleWords(guess, pattern)
             if (remaining.length > 0){
                 this.possible_answers = remaining
+                this.calTotalPossibility()
                 return 2
             }
             else
