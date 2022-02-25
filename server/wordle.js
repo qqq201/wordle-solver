@@ -5,12 +5,11 @@ const sum = (array) => array.reduce((a, b) => a + b)
 class Wordle {
     constructor() {
         this.word_list = fs.readFileSync('./utils/words.txt').toString().split("\n")
-        this.word_list.splice(-1)
-        this.possible_answers = []
         this.possibility = fs.readFileSync('./utils/possibility.json')
         this.possibility = JSON.parse(this.possibility)
+        this.possible_answers = this.word_list.slice(0, 2309)
+        this.total_possibility = sum(this.possible_answers.map((word, _) => this.possibility[word]))
         this.mode = "2309"
-        this.total_possibility = 0
     }
 
     setMode(mode) {

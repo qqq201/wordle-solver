@@ -6,8 +6,8 @@ import RankingPanel from './components/RankingPanel/RankingPanel'
 import MissingAlert from './components/Alerts/MissingAlert'
 import InvalidAlert from './components/Alerts/InvalidAlert'
 import WrongAlert from './components/Alerts/WrongAlert'
-import Dropdown from 'react-bootstrap/Dropdown'
-import ButtonGroup from 'react-bootstrap/ButtonGroup'
+import ServerError from './components/Alerts/ServerError'
+import Header from './components/Header/Header'
 import wordle from './api/wordle'
 import $ from 'jquery'
 
@@ -17,7 +17,7 @@ const nextColor = {
     "G": "B"
 }
 
-// console.clear();
+console.clear();
 
 function App() {
     const [guesses, setGuesses] = useState([])
@@ -26,13 +26,14 @@ function App() {
     const [top_answers, setTopAnswers] = useState([])
     const [possible_answers, setPossibleAnswers] = useState([])
     const [mode, setMode] = useState("2309")
+    const [error, setError] = useState(false)
 
     const fetchPossibleAnswers = async () => {
         try {
             const response = await wordle.getPossibleAnswers()
             setPossibleAnswers(response)
         } catch (error){
-            console.log(error)
+            setError(true)
         }
     }
 
@@ -41,7 +42,7 @@ function App() {
             const response = await wordle.getTopAnswers()
             setTopAnswers(response)
         } catch (error){
-            console.log(error)
+            setError(true)
         }
     }
 
@@ -70,7 +71,7 @@ function App() {
                 setTimeout(() => $('.alert').hide(), 2000)
             }
         } catch (error) {
-            console.log(error)
+            setError(true)
         }
     }
 
@@ -82,7 +83,7 @@ function App() {
                 fetchTopAnswers()
             }
         } catch (error) {
-            console.log(error)
+            setError(true)
         }
     }
 
@@ -95,13 +96,28 @@ function App() {
         start()
     }
 
+    const changeMode = async (selected_mode) => {
+        if (selected_mode !== mode){
+            try {
+                const res = await wordle.changeMode(selected_mode)
+                if (res.success){
+                    setMode(selected_mode)
+                    restart()
+                }
+            } catch (error) {
+                setError(true)
+            }
+        }
+    }
+
     const changeColor = (id) => {
         setCurrentPattern(currentPattern.substring(0, id) + nextColor[currentPattern[id]] + currentPattern.substring(id + 1))
     }
 
     useEffect(() => {
         $('.alert').hide()
-        start()
+        fetchPossibleAnswers()
+        fetchTopAnswers()
     }, [])
 
     useEffect(() => {
@@ -122,34 +138,14 @@ function App() {
         }
     }, [currentGuess, guesses, currentPattern])
 
-    const changeMode = async (selected_mode) => {
-        if (selected_mode !== mode){
-            try {
-                const res = await wordle.changeMode(selected_mode)
-                if (res.success){
-                    setMode(selected_mode)
-                    restart()
-                }
-            } catch (error) {
-                console.log(error)
-            }
-        }
-    }
-
     return (
         <div className="App">
             <MissingAlert/>
             <WrongAlert/>
             <InvalidAlert/>
-            <header className="App-header">
-              <Dropdown as={ButtonGroup}>
-                <Dropdown.Toggle id="dropdown-option" variant="info" className="btn-lg">WORDLE</Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item active={mode === "2309"} onClick={() => changeMode("2309")}>2309 words with same probability</Dropdown.Item>
-                  <Dropdown.Item active={mode === "12947"} onClick={() => changeMode("12947")}>12947 words with diffrent probability</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </header>
+            <ServerError error={error} setClose={() => setError(false)}/>
+            <Header mode={mode} changeMode={changeMode}/>
+
             <div className="container-fluid">
                 <div className='row justify-content-around'>
                     <WordList possible_answers={possible_answers}/>

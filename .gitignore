@@ -1,6 +1,5 @@
 package-lock.json
-words.txt
-possible-words.txt
+wordlist.js
 
 # dependencies
 node_modules

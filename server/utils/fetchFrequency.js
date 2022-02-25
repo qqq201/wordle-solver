@@ -89,8 +89,6 @@ findfreq().then(() => {
         return b[1] - a[1]
     })
 
-    sorted_list = sorted_list.map((word, _) => word[0])
-
     fs.writeFile('./sorted_words_by_freq.txt', sorted_list.map((word, _) => return word[0]).join('\n'), (error) => {
        if (error) throw error;
     })
